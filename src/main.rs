@@ -18,8 +18,11 @@ impl State {
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.cls();
-        ctx.print(1,1,"Hello, world!");
+       match self.mode {
+           GameMode::Menu => self.main_menu(ctx),
+           GameMode::Ended => self.dead(ctx),
+           GameMode::Playing => self.play(ctx)
+       }
     }
 }
 fn main() -> BError {
