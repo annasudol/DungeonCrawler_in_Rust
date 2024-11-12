@@ -1,9 +1,50 @@
 #![warn(clippy::pedantic)]
 
 use bracket_lib::prelude::*;
+use rand::random;
+
 const SCREEN_WIDTH : i32 = 80;
 const SCREEN_HEIGHT : i32 = 50;
 const FRAME_DURATION : f32 = 75.0;
+struct Obstacle {
+    x: i32,
+    gap_y: i32,
+    size: i32,
+}
+
+impl Obstacle {
+    fn new() -> Self {
+        let mut random = RandomNumberGenerator::new()
+        Obstacle {
+            x,
+            gap_y: random.range(10, 40),
+            size: i32::max(2, 20 - score)
+        }
+    }
+
+    fn render(&self, ctx: &mut BTerm, player_x: i32) {
+        let screen_x = self.x - player_x;
+        let half_size = self.size / 2;
+        for y in 0..self.gap_y - half_size {
+            ctx.set(
+                screen_x,
+                y,
+                RGB::named(RED),
+                RGB::named(BLACK),
+                to_cp437('|'),
+            );
+        }
+        for y in self.gap_y + half_size..SCREEN_HEIGHT {
+            ctx.set(
+                screen_x,
+                y,
+                RGB::named(RED),
+                RGB::named(BLACK),
+                to_cp437('|'),
+            );
+        }
+    }
+}
 struct Player {
     x: i32,
     y: i32,
@@ -62,8 +103,8 @@ impl State {
     // START: restart
     fn restart(&mut self) {
         self.mode = GameMode::Playing;
-        self.player = Player::new(1, 0),
-        self.mode = GameMode::Playing;
+        self.player = Player::new(1, 0);
+        self.frame_time = 0.0;
     }
 
     fn main_menu(&mut self, ctx: &mut BTerm) {
@@ -104,7 +145,20 @@ impl State {
 
     // START: play
     fn play(&mut self, ctx: &mut BTerm) {
-        self.mode = GameMode::End;
+        ctx.cls_bg(NAVY);
+        self.frame_time += ctx.frame_time_ms;
+        if self.frame_time > FRAME_DURATION {
+            self.frame_time = 0.0;
+            self.player.gravity_and_move();
+        }
+        if let Some(VirtualKeyCode::Space) = ctx.key {
+            self.player.flap();
+        }
+        self.player.render(ctx);
+        ctx.print(0,0, "Press SPACE to flap!");
+        if self.player.y > SCREEN_HEIGHT {
+            self.mode = GameMode::End;
+        }
     }
     // END: play
 }
