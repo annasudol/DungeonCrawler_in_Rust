@@ -1,8 +1,25 @@
 #![warn(clippy::pedantic)]
 
 use bracket_lib::prelude::*;
+struct Player {
+    x: i32,
+    y: i32,
+    velocity: f32
+}
 
-// START: enum
+impl Player {
+    fn new(x: i32, y: i32) -> Player {
+        Player {
+            x,
+            y,
+            velocity: 0.0,
+        }
+    }
+
+    fn render(&self, ctx: &mut BTerm) {
+        ctx.set(0, self.y, YELLOW, BLACK, to_cp437('@'));
+    }
+}
 enum GameMode {
     Menu,
     Playing,
