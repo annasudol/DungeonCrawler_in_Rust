@@ -44,12 +44,16 @@ enum GameMode {
 // START: state
 struct State {
     mode: GameMode,
+    player: Player,
+    frame_time: f32
 }
 
 impl State {
     fn new() -> Self {
         State {
             mode: GameMode::Menu,
+            frame_time: 0.0,
+            player: Player::new(1, 0),
         }
     }
     // START: restart
