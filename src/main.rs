@@ -1,6 +1,9 @@
 #![warn(clippy::pedantic)]
 
 use bracket_lib::prelude::*;
+const SCREEN_WIDTH : i32 = 80;
+const SCREEN_HEIGHT : i32 = 50;
+const FRAME_DURATION : f32 = 75.0;
 struct Player {
     x: i32,
     y: i32,
@@ -58,6 +61,8 @@ impl State {
     }
     // START: restart
     fn restart(&mut self) {
+        self.mode = GameMode::Playing;
+        self.player = Player::new(1, 0),
         self.mode = GameMode::Playing;
     }
 
